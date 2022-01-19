@@ -1,8 +1,8 @@
+const dictionary = require('./words.json');
 let attempts = 0;
+const maxAttempts = 6;
 
-const wordleGuess = (attemptWord, solutionWord) => {
-  const maxAttempts = 6;
-
+const wordleGuess = (attemptWord, solutionWord, attempts) => {
   if (!(attemptWord.length === solutionWord.length)) {
     throw `the word has to be ${solutionWord.length} letters long`;
   }
@@ -82,11 +82,43 @@ if (typeof window === 'undefined') {
     });
   };
 
+  const initGame = () => {
+    const maxLength = dictionary.reduce((previous, current) =>
+      previous > current ? previous : current
+    );
+    let word = ``;
+
+    const askLength = rl.question(
+      `How many letters should the word be ? (maximum ${maxLength})`,
+      function (wordLength) {
+        if (typeof wordLength === 'Number') {
+          while (word.length !== wordLength) {
+            word = dictionary[Math.floor(Math.random() * dictionary.length)];
+          }
+        }
+      }
+    );
+
+    rl.question(
+      `How many letters should the word be ? (maximum ${maxLength})`,
+      function (wordLength) {
+        if (typeof wordLength === 'Number') {
+          while (word.length !== wordLength) {
+            word = dictionary[Math.floor(Math.random() * dictionary.length)];
+          }
+        }
+      }
+    );
+
+    return { word, maxAttempts };
+  };
+
   rl.on('close', function () {
     process.exit(0);
   });
 
-  startGame(initGame());
+  // startGame(initGame());
+  initGame();
 }
 
 // wordleGuess('reads', solutionWord);
